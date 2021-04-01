@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Kurztrip/driver/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
@@ -35,10 +36,30 @@ func main() {
 	fmt.Println("Successfully connected to database!")
 
 	l := log.New(os.Stdout, "driver-api", log.LstdFlags)
+	dh := handlers.NewDriverHandler(l, db)
 	sm := mux.NewRouter()
 
+	//GET METHODS
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", dh.GetDrivers)
+	getRouter.HandleFunc("/{id:[0-9]+}", dh.GetDriverWithID)
+
+	//PUT METHODS
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", dh.UpdateDriver)
+	putRouter.Use(dh.MiddlewareDriverValidation)
+
+	//POST METHODS
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", dh.AddDriver)
+	postRouter.Use(dh.MiddlewareDriverValidation)
+
+	//DELETE METHODS
+	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/{id:[0-9]+}", dh.DeleteDriver)
+
 	s := http.Server{
-		Addr:         ":8080",
+		Addr:         ":9090",
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  5 * time.Second,
