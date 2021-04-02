@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	host     = "localhost"
+	host     = "fullstack-postgres"
 	port     = 5432
 	user     = "postgres"
 	password = "admin"
@@ -24,6 +24,7 @@ const (
 )
 
 func main() {
+
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -59,7 +60,7 @@ func main() {
 	deleteRouter.HandleFunc("/{id:[0-9]+}", dh.DeleteDriver)
 
 	s := http.Server{
-		Addr:         ":9090",
+		Addr:         ":8080",
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  5 * time.Second,
