@@ -16,6 +16,7 @@ import (
 )
 
 const (
+	addr     = ":8080"
 	host     = "fullstack-postgres"
 	port     = 5432
 	user     = "postgres"
@@ -34,11 +35,11 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Successfully connected to database!")
-
 	l := log.New(os.Stdout, "driver-api", log.LstdFlags)
 	dh := handlers.NewDriverHandler(l, db)
 	sm := mux.NewRouter()
+
+	l.Println("Starting service in port", addr)
 
 	//GET METHODS
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
@@ -60,7 +61,7 @@ func main() {
 	deleteRouter.HandleFunc("/{id:[0-9]+}", dh.DeleteDriver)
 
 	s := http.Server{
-		Addr:         ":8080",
+		Addr:         addr,
 		Handler:      sm,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  5 * time.Second,
