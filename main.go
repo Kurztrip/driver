@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	addr     = ":8080"
+	addr = ":8080"
+	//host = "localhost"
 	host     = "fullstack-postgres"
 	port     = 5432
 	user     = "postgres"
@@ -37,28 +38,39 @@ func main() {
 
 	l := log.New(os.Stdout, "driver-api", log.LstdFlags)
 	dh := handlers.NewDriverHandler(l, db)
+	lh := handlers.NewLocationHandler(l, db)
 	sm := mux.NewRouter()
 
 	l.Println("Starting service in port", addr)
 
 	//GET METHODS
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", dh.GetDrivers)
-	getRouter.HandleFunc("/{id:[0-9]+}", dh.GetDriverWithID)
+	getRouter.HandleFunc("/", handlers.GetService)
+	getRouter.HandleFunc("/drivers/", dh.GetDrivers)
+	getRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.GetDriverWithID)
+	getRouter.HandleFunc("/locations/", lh.GetLocations)
+	getRouter.HandleFunc("/locations/{id:[0-9]+}", lh.GetLocationWithID)
 
 	//PUT METHODS
-	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", dh.UpdateDriver)
-	putRouter.Use(dh.MiddlewareDriverValidation)
+	putDriverRouter := sm.Methods(http.MethodPut).Subrouter()
+	putDriverRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.UpdateDriver)
+	putDriverRouter.Use(dh.MiddlewareDriverValidation)
+	putLocationRouter := sm.Methods(http.MethodPut).Subrouter()
+	putLocationRouter.HandleFunc("/locations/{id:[0-9]+}", lh.UpdateLocation)
+	putLocationRouter.Use(lh.MiddlewareLocationValidation)
 
 	//POST METHODS
-	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", dh.AddDriver)
-	postRouter.Use(dh.MiddlewareDriverValidation)
+	postDriverRouter := sm.Methods(http.MethodPost).Subrouter()
+	postDriverRouter.HandleFunc("/drivers/", dh.AddDriver)
+	postDriverRouter.Use(dh.MiddlewareDriverValidation)
+	postLocationRouter := sm.Methods(http.MethodPost).Subrouter()
+	postLocationRouter.HandleFunc("/locations/", lh.AddLocation)
+	postLocationRouter.Use(lh.MiddlewareLocationValidation)
 
 	//DELETE METHODS
 	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc("/{id:[0-9]+}", dh.DeleteDriver)
+	deleteRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.DeleteDriver)
+	deleteRouter.HandleFunc("/locations/{id:[0-9]+}", lh.DeleteLocation)
 
 	s := http.Server{
 		Addr:         addr,
