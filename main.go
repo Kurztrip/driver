@@ -46,9 +46,9 @@ func main() {
 	//GET METHODS
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", handlers.GetService)
-	getRouter.HandleFunc("/drivers/", dh.GetDrivers)
+	getRouter.HandleFunc("/drivers", dh.GetDrivers)
 	getRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.GetDriverWithID)
-	getRouter.HandleFunc("/locations/", lh.GetLocations)
+	getRouter.HandleFunc("/locations", lh.GetLocations)
 	getRouter.HandleFunc("/locations/{id:[0-9]+}", lh.GetLocationWithID)
 
 	//PUT METHODS
@@ -61,10 +61,10 @@ func main() {
 
 	//POST METHODS
 	postDriverRouter := sm.Methods(http.MethodPost).Subrouter()
-	postDriverRouter.HandleFunc("/drivers/", dh.AddDriver)
+	postDriverRouter.HandleFunc("/drivers", dh.AddDriver)
 	postDriverRouter.Use(dh.MiddlewareDriverValidation)
 	postLocationRouter := sm.Methods(http.MethodPost).Subrouter()
-	postLocationRouter.HandleFunc("/locations/", lh.AddLocation)
+	postLocationRouter.HandleFunc("/locations", lh.AddLocation)
 	postLocationRouter.Use(lh.MiddlewareLocationValidation)
 
 	//DELETE METHODS
