@@ -1,39 +1,29 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Kurztrip/driver/data"
 )
 
-func (dh *DriverHandler) AddDriver(rw http.ResponseWriter, r *http.Request) {
-	dh.l.Println("Handle POST driver")
-
-	sqlStatement := `INSERT INTO drivers (driver_name, driver_surname, driver_age, driver_email, driver_address, driver_phone)
-					VALUES ($1, $2, $3, $4, $5, $6)
-					RETURNING driver_id`
-
-	dvr := r.Context().Value(KeyDriver{}).(*data.Driver)
-
-	id := 0
-	err := dh.db.QueryRow(sqlStatement, dvr.Name, dvr.Surname, dvr.Age, dvr.Email, dvr.Address, dvr.Phone).Scan(&id)
-	if err != nil {
-		panic(err)
-	}
-	dh.l.Println("Driver was added succesfully! id:", id)
-}
-
 func (lh *LocationHandler) AddLocation(rw http.ResponseWriter, r *http.Request) {
 	lh.l.Println("Handle POST location")
 
-	sqlStatement := `INSERT INTO locations (driver_id, latitude, longitude)
-					VALUES ($1, $2, $3)
+	sqlStatement := `INSERT INTO locations (truck_id, latitude, longitude, location_time)
+					VALUES ($1, $2, $3, $4)
 					RETURNING location_id`
 
 	loc := r.Context().Value(KeyLocation{}).(*data.Location)
 
 	id := 0
-	err := lh.db.QueryRow(sqlStatement, loc.Driver_ID, loc.Latitude, loc.Longitude).Scan(&id)
+	t := time.Now()
+	formatted := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d",
+		t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second())
+
+	err := lh.db.QueryRow(sqlStatement, loc.Truck_ID, loc.Latitude, loc.Longitude, formatted).Scan(&id)
 	if err != nil {
 		panic(err)
 	}

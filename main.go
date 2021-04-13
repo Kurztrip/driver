@@ -17,8 +17,8 @@ import (
 
 const (
 	addr = ":8080"
-	//host = "localhost"
-	host     = "fullstack-postgres"
+	host = "localhost"
+	//host     = "fullstack-postgres"
 	port     = 5432
 	user     = "postgres"
 	password = "admin"
@@ -37,7 +37,6 @@ func main() {
 	}
 
 	l := log.New(os.Stdout, "driver-api", log.LstdFlags)
-	dh := handlers.NewDriverHandler(l, db)
 	lh := handlers.NewLocationHandler(l, db)
 	sm := mux.NewRouter()
 
@@ -46,30 +45,21 @@ func main() {
 	//GET METHODS
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", handlers.GetService)
-	getRouter.HandleFunc("/drivers", dh.GetDrivers)
-	getRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.GetDriverWithID)
 	getRouter.HandleFunc("/locations", lh.GetLocations)
 	getRouter.HandleFunc("/locations/{id:[0-9]+}", lh.GetLocationWithID)
 
 	//PUT METHODS
-	putDriverRouter := sm.Methods(http.MethodPut).Subrouter()
-	putDriverRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.UpdateDriver)
-	putDriverRouter.Use(dh.MiddlewareDriverValidation)
 	putLocationRouter := sm.Methods(http.MethodPut).Subrouter()
 	putLocationRouter.HandleFunc("/locations/{id:[0-9]+}", lh.UpdateLocation)
 	putLocationRouter.Use(lh.MiddlewareLocationValidation)
 
 	//POST METHODS
-	postDriverRouter := sm.Methods(http.MethodPost).Subrouter()
-	postDriverRouter.HandleFunc("/drivers", dh.AddDriver)
-	postDriverRouter.Use(dh.MiddlewareDriverValidation)
 	postLocationRouter := sm.Methods(http.MethodPost).Subrouter()
 	postLocationRouter.HandleFunc("/locations", lh.AddLocation)
 	postLocationRouter.Use(lh.MiddlewareLocationValidation)
 
 	//DELETE METHODS
 	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc("/drivers/{id:[0-9]+}", dh.DeleteDriver)
 	deleteRouter.HandleFunc("/locations/{id:[0-9]+}", lh.DeleteLocation)
 
 	s := http.Server{
