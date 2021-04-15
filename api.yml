@@ -1,120 +1,12 @@
 swagger: "2.0"
 info:
-  description: "Esta es una API que recibe y entrega la información de los conductores de camiones y su ubicación en un tiempo especifico."
+  description: "Esta es una API que recibe y entrega la información de las ubicaciones de un camión en un tiempo especifico."
   title: Kurztrip Driver
   version: '1.0'
 tags:
-  - name: "Conductores"
-    description: "Añadir, modificar y eliminar conductores"
   - name: "Ubicaciones"
     description: "Añadir, modificar y eliminar ubicaciones"
 paths:
-  /drivers:
-    get:
-      tags:
-        - "Conductores"
-      summary: "Retorna todos los conductores"
-      description: ""
-      operationId: "GetDrivers"
-      produces:
-        - "application/json"
-      responses:
-        '200':
-          description: "Operación exitosa"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Driver"
-    post:
-      tags:
-        - "Conductores"
-      summary: "Añade un conductor"
-      description: ""
-      operationId: "addDriver"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Objeto conductor que se desea añadir"
-          required: true
-          schema:
-            $ref: "#/definitions/Driver"
-      produces:
-        - "application/json"
-      responses:
-        '200':
-          description: "Operación exitosa"
-        '400':
-          description: "Datos invalidos"
-  /drivers/{id}:
-    get:
-      tags:
-        - "Conductores"
-      summary: "Finds a driver"
-      description: ""
-      operationId: "GetDriverWithID"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of driver"
-          required: true
-          type: "integer"
-          format: "int64"
-      produces:
-        - "application/json"
-      responses:
-        '200':
-          description: "Succesful operation"
-          schema:
-            $ref: "#/definitions/Driver"
-        '404':
-          description: No rows were returned!
-    put:
-      tags:
-        - "Conductores"
-      summary: "updates a driver"
-      description: ""
-      operationId: "UpdateDriver"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "driver object that needs to be updated"
-          required: true
-          schema:
-            $ref: "#/definitions/Driver"
-        - name: "id"
-          in: "path"
-          description: "ID of driver to update"
-          required: true
-          type: "integer"
-          format: "int64"
-      produces:
-        - "application/json"
-      responses:
-        '200':
-          description: "Succesful operation"
-        '400':
-          description: Invalid Driver
-    delete:
-      tags:
-        - "Conductores"
-      summary: "Deletes a driver"
-      description: ""
-      operationId: "DeleteDriver"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of driver to delete"
-          required: true
-          type: "integer"
-          format: "int64"
-      produces:
-        - "application/json"
-      responses:
-        '200':
-          description: "Succesful operation"
-          schema:
-            type: "integer"
-            example: 1
   /locations:
     get:
       tags:
@@ -223,43 +115,19 @@ paths:
             example: 1
 
 definitions:
-  Driver:
-    type: "object"
-    required:
-      - "id"
-      - "name"
-      - "surname"
-    properties:
-      id:
-        type: "integer"
-        format: "int32"
-      name:
-        type: "string"
-      surname:
-        type: "string"
-      age:
-        type: "number"
-        format: "float32"
-      email:
-        type : "string"
-        format: "email"
-      address:
-        type: "string"
-      phone:
-        type: "number"
-        format: "float32"
   Location:
     type: "object"
     required:
       - "id"
-      - "driver_id"
+      - "truck_id"
       - "latitude"
       - "longitude"
+      - "time"
     properties:
       id:
         type: "integer"
         format: "int32"
-      driver_id:
+      truck_id:
         type: "number"
         format: "float32"
       latitude:
@@ -268,3 +136,5 @@ definitions:
       longitude:
         type: "number"
         format: "float32"
+      time:
+        type: "string"

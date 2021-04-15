@@ -17,7 +17,7 @@ import (
 
 const (
 	addr = ":8080"
-	host = "localhost"
+	//host = "34.123.78.15"
 	//host     = "fullstack-postgres"
 	port     = 5432
 	user     = "postgres"
@@ -26,6 +26,8 @@ const (
 )
 
 func main() {
+
+	var host string = os.Getenv("HOST")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -40,7 +42,7 @@ func main() {
 	lh := handlers.NewLocationHandler(l, db)
 	sm := mux.NewRouter()
 
-	l.Println("Starting service in port", addr)
+	l.Println("Starting service ...")
 
 	//GET METHODS
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
